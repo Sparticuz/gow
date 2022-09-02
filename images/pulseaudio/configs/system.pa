@@ -18,6 +18,10 @@
 # This startup script is used only if PulseAudio is started in system
 # mode.
 
+### Don't load the dbus module
+### Doesn't stop the errors in the log
+unload-module module-dbus-protocol
+
 ### Automatically restore the volume of streams and devices
 load-module module-device-restore
 load-module module-stream-restore

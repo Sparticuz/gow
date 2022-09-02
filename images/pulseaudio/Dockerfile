@@ -1,9 +1,7 @@
-FROM ubuntu:20.04 AS base
+FROM ubuntu:22.04 AS base
 
-ENV DEBIAN_FRONTEND=noninteractive 
-ENV TZ="Europe/London"
-
-ENV UNAME retro
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ "Etc/UTC"
 
 # Taken from https://github.com/jessfraz/dockerfiles/blob/master/pulseaudio/
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -13,18 +11,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     pulseaudio \
     && rm -rf /var/lib/apt/lists/*
 
-ENV HOME /home/$UNAME
-WORKDIR $HOME
-
+# Copy Configuration
 COPY pulseaudio/configs/default.pa /etc/pulse/default.pa
 COPY pulseaudio/configs/client.conf /etc/pulse/client.conf
 COPY pulseaudio/configs/daemon.conf /etc/pulse/daemon.conf
 COPY pulseaudio/scripts/startup.sh /startup.sh
+
 # Common scripts
 COPY --chmod=777 common/* /bin/
 
-EXPOSE 4713
+# Add non-root home folder
+RUN mkdir -p /tmp/pulse/home && \
+    chmod 777 /tmp/pulse -R
 
+ENV HOME /tmp/pulse/home
+WORKDIR $HOME
+
+# Run pulseaudio
 CMD /bin/bash /startup.sh
 
 ARG IMAGE_SOURCE

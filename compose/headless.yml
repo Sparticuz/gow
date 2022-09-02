@@ -42,7 +42,7 @@ services:
   #   context: ./images/
   #   dockerfile: pulseaudio/Dockerfile
     image: ghcr.io/games-on-whales/pulseaudio:edge
-    ipc: ${XORG_IPC}
+    user: ${GOWUID}:${GOWGID}
     volumes:
       - ${PULSE_SOCKET_HOST}:${PULSE_SOCKET_GUEST}
 
